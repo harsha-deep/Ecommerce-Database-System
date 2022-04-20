@@ -9,6 +9,8 @@ public class Run {
 
         db.removeCustomer();
 
+        db.close();
+
         if (scanner != null) {
             scanner.close();
         }
