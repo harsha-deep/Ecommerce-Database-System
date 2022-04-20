@@ -47,3 +47,13 @@ create table product (
     category VARCHAR(20),
     constraint pk_product PRIMARY KEY (product_id)
 );
+
+-- @block
+create table owner (
+    owner_id INTEGER,
+    owner_name varchar(30),
+    owner_mobile varchar(15),
+    owner_email varchar(40),
+    owner_password varchar(40),
+    constraint pk_owner PRIMARY KEY (owner_id)
+)

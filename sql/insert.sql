@@ -15,13 +15,18 @@ values
 -- @block
 insert into transaction 
 values 
-    (10001, 1701,101,'Complete'),
-    (10002, 1702,102,'Processing'),
-    (10003, 1703,103,'Initiated');
+    (10001, 1701, 101, 'Complete'),
+    (10002, 1702, 102, 'Processing'),
+    (10003, 1703, 103, 'Initiated');
 
 -- @block
 insert into product 
 values 
-    (201,1701,'GUND',7893.23,'Teddy','Toys'),
-    (202,1702,'Bayer',8979.65,'Aspirin','Medicines'),
-    (203,1703,'Paper Street Soap Co.',2099.97,'F.Club','Soap');
+    (201, 1701, 'GUND', 7893.23, 'Teddy', 'Toys'),
+    (202, 1702, 'Bayer', 8979.65,'Aspirin', 'Medicines'),
+    (203, 1703, 'Paper Street Soap Co.', 2099.97, 'F.Club', 'Soap');
+
+-- @block
+insert into owner
+values
+    (1, 'Omni-Man','777-777-777','om@email.com', '1234');
