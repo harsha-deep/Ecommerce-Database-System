@@ -33,7 +33,7 @@ create table trans (
     order_id INTEGER,
     cust_id INTEGER,
     transaction_status VARCHAR(10),
-    -- money_paid FLOAT;
+    money_paid FLOAT,
     constraint pk_transaction PRIMARY KEY (transaction_id)
 );
 

@@ -26,7 +26,7 @@ public class Database {
         }
     }
 
-    public boolean auth(Statement stmt, int ownerID, String ownerPass) {
+    public boolean ownerAuth(Statement stmt, int ownerID, String ownerPass) {
 
         boolean isAuth = false;
         String auth = null;
@@ -51,9 +51,33 @@ public class Database {
         return isAuth;
     }
 
+    public boolean customerAuth(Statement stmt, int custID, String custPass) {
+        boolean isAuth = false;
+        String auth = null;
+
+        try {
+            auth = "SELECT * from customer";
+            ResultSet rs = stmt.executeQuery(auth);
+
+            while (rs.next()) {
+                int gotID = rs.getInt("cust_id");
+                String gotPass = rs.getString("cust_password");
+
+                if (gotID == custID && gotPass.equals(custPass)) {
+                    isAuth = true;
+                    break;
+                }
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return isAuth;
+    }
+
     public void addCustomer() {
 
-        System.out.print("Enter ID: ");
+        System.out.print("Enter customer ID: ");
         int custID = scanner.nextInt();
         scanner.nextLine();
 
@@ -78,7 +102,7 @@ public class Database {
 
         try {
             String query = "INSERT INTO customer (cust_id, cust_name, mobile, cust_email, cust_password) VALUES (?, ?, ?, ?, ?)";
-            boolean isAuth = auth(stmt, ownerID, ownerPass);
+            boolean isAuth = ownerAuth(stmt, ownerID, ownerPass);
             pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, custID);
             pstmt.setString(2, custName);
@@ -101,7 +125,7 @@ public class Database {
     }
 
     public void removeCustomer() {
-        System.out.print("Enter ID: ");
+        System.out.print("Enter customer ID: ");
         int custID = scanner.nextInt();
         scanner.nextLine();
 
@@ -116,7 +140,7 @@ public class Database {
             String query = "DELETE FROM customer where cust_id = ?";
             pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, custID);
-            boolean isAuth = auth(stmt, ownerID, ownerPass);
+            boolean isAuth = ownerAuth(stmt, ownerID, ownerPass);
             if (isAuth) {
                 System.out.println("Authentication Sucessful.");
                 int retval = pstmt.executeUpdate();
@@ -136,19 +160,15 @@ public class Database {
     }
 
     public void resetPassword() {
-        System.out.print("Enter ID: ");
+        System.out.print("Enter customer ID: ");
         int custID = scanner.nextInt();
         scanner.nextLine();
 
+        System.out.print("Enter customer password: ");
+        String custPass = scanner.nextLine();
+
         System.out.print("Please enter the new password: ");
         String setPass = scanner.nextLine();
-
-        System.out.print("Please enter the owner's ID: ");
-        int ownerID = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.print("Please enter the owner's password: ");
-        String ownerPass = scanner.nextLine();
 
         try {
             String query = "UPDATE customer SET cust_password = ? where cust_id = ?";
@@ -156,12 +176,11 @@ public class Database {
             pstmt.setString(1, setPass);
             pstmt.setInt(2, custID);
 
-            boolean isAuth = auth(stmt, ownerID, ownerPass);
+            boolean isAuth = customerAuth(stmt, custID, custPass);
 
             if (isAuth) {
-                System.out.println("Authentication Sucessful.");
                 pstmt.executeUpdate();
-                System.out.println("Database Updated Sucessfully .");
+                System.out.println("Database Updated Sucessfully.");
             } else {
                 System.out.println("Authentication Failed.");
             }
@@ -193,7 +212,7 @@ public class Database {
 
         System.out.println("");
 
-        boolean isAuth = auth(stmt, ownerID, ownerPass);
+        boolean isAuth = ownerAuth(stmt, ownerID, ownerPass);
         if (isAuth) {
             try {
                 String command = "SELECT * from %s";
@@ -312,7 +331,128 @@ public class Database {
     }
 
     public void totalizeBill() {
-        
+
+        System.out.print("Enter customer ID: ");
+        int custID = scanner.nextInt();
+        scanner.nextLine();
+
+        double totalBill = 0;
+
+        try {
+            String query = "SELECT * FROM trans where cust_id = " + Integer.toString(custID);
+            ResultSet rs = stmt.executeQuery(query);
+
+            while (rs.next()) {
+                totalBill += rs.getInt("money_paid");
+            }
+
+            System.out.println("Total: " + Double.toString(totalBill));
+
+            try {
+                if (rs != null)
+                    rs.close();
+            } catch (SQLException s) {
+                s.printStackTrace();
+            }
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addItem() {
+        System.out.print("Enter Product ID: ");
+        int productID = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Enter the name of seller: ");
+        String sellerName = scanner.nextLine();
+
+        System.out.print("Enter the price: ");
+        float price = scanner.nextFloat();
+        scanner.nextLine();
+
+        System.out.print("Enter the name of product: ");
+        String ProductName = scanner.nextLine();
+
+        System.out.print("Category of the product: ");
+        String categoryName = scanner.nextLine();
+
+        System.out.print("Please enter the owner's ID: ");
+        int ownerID = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Please enter the owner's password: ");
+        String ownerPass = scanner.nextLine();
+
+        try {
+            String query = "INSERT INTO product (product_id, order_id, seller, price, product_name, category) VALUES (?, ?, ?, ?, ?, ?)";
+            boolean isAuth = ownerAuth(stmt, ownerID, ownerPass);
+            pstmt = conn.prepareStatement(query);
+
+            pstmt.setInt(1, productID);
+            pstmt.setNull(2, java.sql.Types.INTEGER);
+            pstmt.setString(3, sellerName);
+            pstmt.setFloat(4, price);
+            pstmt.setString(5, ProductName);
+            pstmt.setString(6, categoryName);
+            if (isAuth) {
+                System.out.println("Authentication Sucessful.");
+                pstmt.executeUpdate();
+                System.out.println("Database Updated Sucessfully .");
+            } else {
+                System.out.println("Authentication Failed.");
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void placeOrder() {
+        System.out.print("Enter customer ID: ");
+        int custID = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Enter the price: ");
+        float price = scanner.nextFloat();
+        scanner.nextLine();
+
+        System.out.print("Enter the location: ");
+        String orderLocation = scanner.nextLine();
+
+        System.out.print("Enter password: ");
+        String custPass = scanner.nextLine();
+
+        try {
+            String query = "INSERT INTO online_order (order_id, cust_id, price, order_location, dispatched) VALUES (?, ?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, custID);
+            pstmt.setInt(2, custID);
+            pstmt.setFloat(3, price);
+            pstmt.setString(4, orderLocation);
+            pstmt.setBoolean(5, false);
+
+            boolean isAuth = customerAuth(stmt, custID, custPass);
+            if (isAuth) {
+                System.out.println("Authentication Sucessful.");
+                pstmt.executeUpdate();
+                System.out.println("Database Updated Sucessfully .");
+            } else {
+                System.out.println("Authentication Failed.");
+            }
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void close() {
@@ -344,6 +484,7 @@ public class Database {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("See you again!");
     }
 
     // database params
@@ -357,6 +498,7 @@ public class Database {
     // Scanner
     private static Scanner scanner = new Scanner(System.in);
 
+    // java.sql objects
     private Connection conn = null;
     private Statement stmt = null;
     private PreparedStatement pstmt = null;
