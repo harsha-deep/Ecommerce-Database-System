@@ -7,7 +7,7 @@ public class Run {
         Database db = new Database();
         db.init();
 
-        db.removeCustomer();
+        db.listItems();
 
         db.close();
 

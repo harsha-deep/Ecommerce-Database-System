@@ -4,8 +4,8 @@ add constraint fk_order FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
 
 
 -- @block
-alter table transaction
-add constraint fk_transaction FOREIGN KEY (order_id) REFERENCES online_order(order_id);
+alter table trans
+add constraint trans FOREIGN KEY (order_id) REFERENCES online_order(order_id);
 
 
 -- @block

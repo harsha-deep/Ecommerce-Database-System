@@ -13,7 +13,7 @@ values
     (1703, 103, 3443.33, 'Wilmington', TRUE);
 
 -- @block
-insert into transaction 
+insert into trans 
 values 
     (10001, 1701, 101, 'Complete'),
     (10002, 1702, 102, 'Processing'),

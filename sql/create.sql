@@ -28,12 +28,13 @@ create table online_order (
 
 
 -- @block
-create table transaction (
-    transction_id INTEGER,
+create table trans (
+    transaction_id INTEGER,
     order_id INTEGER,
     cust_id INTEGER,
     transaction_status VARCHAR(10),
-    constraint pk_transaction PRIMARY KEY (transction_id)
+    -- money_paid FLOAT;
+    constraint pk_transaction PRIMARY KEY (transaction_id)
 );
 
 
