@@ -3,6 +3,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.Scanner;
 
@@ -18,6 +19,8 @@ public class Database {
             System.out.println("Creating statement...");
 
             stmt = conn.createStatement();
+            stmt1 = conn.createStatement();
+            updt = conn.createStatement();
 
         } catch (SQLException se) {
             se.printStackTrace();
@@ -32,7 +35,7 @@ public class Database {
         String auth = null;
 
         try {
-            auth = "SELECT * from owner";
+            auth = "SELECT * from ownerguy";
             ResultSet rs = stmt.executeQuery(auth);
 
             while (rs.next()) {
@@ -102,6 +105,7 @@ public class Database {
 
         try {
             String query = "INSERT INTO customer (cust_id, cust_name, mobile, cust_email, cust_password) VALUES (?, ?, ?, ?, ?)";
+
             boolean isAuth = ownerAuth(stmt, ownerID, ownerPass);
             pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, custID);
@@ -137,20 +141,24 @@ public class Database {
         String ownerPass = scanner.nextLine();
 
         try {
-            String query = "DELETE FROM customer where cust_id = ?";
-            pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, custID);
+            String deleteForeignKey = "DELETE FROM online_order where cust_id = " + custID;
+            String query = "DELETE FROM customer where cust_id = " + custID;
+            System.out.println(deleteForeignKey);
+            System.out.println(query);
             boolean isAuth = ownerAuth(stmt, ownerID, ownerPass);
             if (isAuth) {
                 System.out.println("Authentication Sucessful.");
-                int retval = pstmt.executeUpdate();
-                if (retval != 0)
+                int retval1 = updt.executeUpdate(deleteForeignKey);
+                int retval2 = stmt1.executeUpdate(query);
+                if (retval1 != 0 || retval2 != 0)
                     System.out.println("Database Updated Sucessfully .");
                 else
                     System.out.println("Something went wrong! (or) User doesn't exist!");
             } else {
                 System.out.println("Authentication Failed.");
             }
+        } catch (SQLIntegrityConstraintViolationException sie) {
+            System.out.println(sie.getMessage());
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
@@ -501,5 +509,8 @@ public class Database {
     // java.sql objects
     private Connection conn = null;
     private Statement stmt = null;
+    private Statement stmt1 = null;
+    private Statement updt = null;
     private PreparedStatement pstmt = null;
+
 }

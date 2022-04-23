@@ -30,6 +30,6 @@ values
     (204, 1704, 'Vice City Lockers Ltd.', 1099.56, 'Flange 9000', 'Lockers');
 
 -- @block
-insert into owner
+insert into ownerguy
 values
     (1, 'Omni-Man','777-777-777','om@email.com', '1234');

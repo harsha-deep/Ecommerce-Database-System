@@ -50,11 +50,11 @@ create table product (
 );
 
 -- @block
-create table owner (
+create table ownerguy (
     owner_id INTEGER,
     owner_name varchar(30),
     owner_mobile varchar(15),
     owner_email varchar(40),
     owner_password varchar(40),
     constraint pk_owner PRIMARY KEY (owner_id)
-)
+);
